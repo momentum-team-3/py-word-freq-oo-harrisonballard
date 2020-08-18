@@ -7,54 +7,74 @@ STOP_WORDS = [
 
 class FileReader:
     def __init__(self, filename):
-        pass
+        self.filename = filename
 
     def read_contents(self):
         """
-        This should read all the contents of the file
-        and return them as one string.
+        read file contents and return as a single string
         """
-        raise NotImplementedError("FileReader.read_contents")
+        with open(self.filename, "rt") as infile:
+            return infile.read()
 
 
 class WordList:
     def __init__(self, text):
-        pass
+        # initialize list_of_words attribute
+        self.text = text
+        self.list_of_words = None
 
     def extract_words(self):
         """
-        This should get all words from the text. This method
-        is responsible for lowercasing all words and stripping
-        them of punctuation.
+        lowercases the words and strips them of punctuation
         """
-        raise NotImplementedError("WordList.extract_words")
+        self.list_of_words = self.text.lower().replace('.', ' ').replace(',',' ').replace('!', '').split()
 
     def remove_stop_words(self):
         """
-        Removes all stop words from our word list. Expected to
-        be run after extract_words.
+        after extract_words, removes all the common stop words from the list
         """
-        raise NotImplementedError("WordList.remove_stop_words")
+        list_with_stop_words_removed = []
+
+        for word in self.list_of_words:
+            if word not in STOP_WORDS:
+                list_with_stop_words_removed.append(word)       
+
+        self.list_of_words = list_with_stop_words_removed
 
     def get_freqs(self):
         """
-        Returns a data structure of word frequencies that
-        FreqPrinter can handle. Expected to be run after
-        extract_words and remove_stop_words. The data structure
-        could be a dictionary or another type of object.
+        returns dictionary of word frequencies for FreqPrinter to use.
+        Runs after extract_words and remove_stop_words.
         """
-        raise NotImplementedError("WordList.get_freqs")
+        frequencies = {}
+
+        for word in self.list_of_words:
+            #add to the counter if the word's been seen before
+            if word in frequencies:
+                frequencies[word] = frequencies[word] + 1
+            #create a word in the dictionary if it hasn't been seen before
+            else:
+                frequencies[word] = 1
+        return frequencies
 
 
 class FreqPrinter:
     def __init__(self, freqs):
-        pass
+        self.freqs = freqs
 
-    def print_freqs(self):
+    def printfreqs(self):
+        sortedfrequencies = sorted(self.freqs.items(), key=lambda x: x[1], reverse=True) 
+
+        i = 0
+        while i < 10:
+            for item in sortedfrequencies:
+                num_stars = sortedfrequencies[item]
+                print("{sortedfrequencies} | {sortedfrequencies[value]} " + "   " + '*'*num_stars)
+                i += 1
+
         """
         Prints out a frequency chart of the top 10 items
         in our frequencies data structure.
-
         Example:
           her | 33   *********************************
         which | 12   ************
@@ -67,7 +87,6 @@ class FreqPrinter:
        rights | 6    ******
         right | 6    ******
         """
-        raise NotImplementedError("FreqPrinter.print_freqs")
 
 
 if __name__ == "__main__":
